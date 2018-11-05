@@ -1,7 +1,9 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include "utils.h"
+#include <chrono>
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <string>
@@ -77,8 +79,12 @@ void cleanup()
 
 void generateReferenceImage(std::string input_filename, std::string output_filename)
 {
-  cv::Mat reference = cv::imread(input_filename, CV_LOAD_IMAGE_GRAYSCALE);
-
+  cv::Mat original = cv::imread(input_filename, CV_LOAD_IMAGE_COLOR);
+  auto start = std::chrono::steady_clock::now();
+  cv::Mat reference;
+  cv::cvtColor(original, reference, cv::COLOR_BGR2GRAY);
+  auto end = std::chrono::steady_clock::now();
+  std::chrono::duration<double> diff = end-start; // sec
+  printf("Reference OpenCV code ran in: %f msecs.\n", diff * 1000);
   cv::imwrite(output_filename, reference);
-
 }

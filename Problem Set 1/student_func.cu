@@ -50,17 +50,26 @@ void rgba_to_greyscale(const uchar4* const rgbaImage,
   //First create a mapping from the 2D block and grid locations
   //to an absolute 2D location in the image, then use that to
   //calculate a 1D offset
+
+  size_t x = threadIdx.x + blockIdx.x*blockDim.x;
+  size_t y = threadIdx.y + blockIdx.y*blockDim.y;
+  if (x < numRows && y < numCols){
+	size_t offset = x*numCols + y;
+    uchar4 rgbpx = *(rgbaImage + offset);
+    greyImage[offset] = (unsigned char)(0.299f * rgbpx.x + 0.587f * rgbpx.y + 0.114f * rgbpx.z);
+  }
 }
 
 void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, uchar4 * const d_rgbaImage,
                             unsigned char* const d_greyImage, size_t numRows, size_t numCols)
 {
   //You must fill in the correct sizes for the blockSize and gridSize
-  //currently only one block with one thread is being launched
-  const dim3 blockSize(1, 1, 1);  //TODO
-  const dim3 gridSize( 1, 1, 1);  //TODO
+  const size_t blockN = 32;
+  const dim3 blockSize(blockN, blockN, 1);
+  unsigned int numBlocksX = (unsigned int)(numRows / blockN + 1);
+  unsigned int numBlocksY = (unsigned int)(numCols / blockN + 1);
+  const dim3 gridSize(numBlocksX, numBlocksY, 1);
   rgba_to_greyscale<<<gridSize, blockSize>>>(d_rgbaImage, d_greyImage, numRows, numCols);
-  
-  cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
-
+  cudaDeviceSynchronize();
+  checkCudaErrors(cudaGetLastError());
 }

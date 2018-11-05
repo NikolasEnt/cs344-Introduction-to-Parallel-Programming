@@ -5,6 +5,7 @@
 #include "utils.h"
 #include <string>
 #include <stdio.h>
+#include <chrono>
 #include "reference_calc.h"
 #include "compare.h"
 
@@ -63,9 +64,9 @@ int main(int argc, char **argv) {
   //call the students' code
   your_rgba_to_greyscale(h_rgbaImage, d_rgbaImage, d_greyImage, numRows(), numCols());
   timer.Stop();
-  cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
+  //cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 
-  int err = printf("Your code ran in: %f msecs.\n", timer.Elapsed());
+  int err = printf("Your code ran in: %f msecs with CUDA.\n", timer.Elapsed());
 
   if (err < 0) {
     //Couldn't print! Probably the student closed stdout - bad news
@@ -78,12 +79,15 @@ int main(int argc, char **argv) {
 
   //check results and output the grey image
   postProcess(output_file, h_greyImage);
-
+  auto start = std::chrono::steady_clock::now();
   referenceCalculation(h_rgbaImage, h_greyImage, numRows(), numCols());
-
+  auto end = std::chrono::steady_clock::now();
+  std::chrono::duration<double> diff = end-start; // sec
+  printf("Reference loop code ran in: %f msecs.\n", diff * 1000);
   postProcess(reference_file, h_greyImage);
 
-  //generateReferenceImage(input_file, reference_file);
+  generateReferenceImage(input_file, reference_file);
+
   compareImages(reference_file, output_file, useEpsCheck, perPixelError, 
                 globalError);
 
