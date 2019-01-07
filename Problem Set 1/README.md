@@ -11,8 +11,8 @@ make
 ./HW1 path/to/the/input/image
 ```
 
-The result image is outouted in the build directory.
-The program prints out timing of execution in three modes: CUDA, straightforward loop and openCV conversion. The difference is more sound on big input images.
+The resulting image is outputted in the build directory.
+The program prints out time of execution in three modes: CUDA, straightforward loop and openCV conversion. The difference is more sound on big input images.
 
 ## Sample output
 
