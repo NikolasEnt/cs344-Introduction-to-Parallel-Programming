@@ -32,7 +32,7 @@ CUDA_INCLUDEPATH=/usr/local/cuda/include
 #CUDA_INCLUDEPATH=/usr/local/cuda/include
 #CUDA_LIBPATH=/usr/local/cuda/lib
 
-NVCC_OPTS=-O3 -Xcompiler -Wall -Xcompiler -Wextra -m64 -DCUDA_ARCH_BIN="3.5"
+NVCC_OPTS=-O3 -Xcompiler -Wall -Xcompiler -Wextra -m64 -DCUDA_ARCH_BIN="7.5"
 
 GCC_OPTS=-O3 -Wall -Wextra -m64
 
